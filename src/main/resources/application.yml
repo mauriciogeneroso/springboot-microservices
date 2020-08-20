@@ -1,0 +1,19 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: sringboot-microservices
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  jxm:
+    enabled: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/springbootmicroservices?allowPublicKeyRetrieval=true&sslMode=DISABLED
+    username: root
+    password: mysql
