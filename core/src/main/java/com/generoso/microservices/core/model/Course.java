@@ -1,4 +1,4 @@
-package com.generoso.microservices.endpoint.model;
+package com.generoso.microservices.core.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

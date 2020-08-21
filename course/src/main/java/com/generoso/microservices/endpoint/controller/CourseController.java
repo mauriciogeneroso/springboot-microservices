@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.generoso.microservices.endpoint.model.Course;
+import com.generoso.microservices.core.model.Course;
 import com.generoso.microservices.endpoint.service.CourseService;
 
 import lombok.RequiredArgsConstructor;
