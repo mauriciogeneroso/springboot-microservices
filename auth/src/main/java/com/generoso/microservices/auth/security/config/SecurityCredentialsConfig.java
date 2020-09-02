@@ -1,55 +1,46 @@
 package com.generoso.microservices.auth.security.config;
 
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.cors.CorsConfiguration;
 import com.generoso.microservices.auth.security.filter.JwtUsernameAndPasswordAuthenticationFilter;
-import com.generoso.microservices.auth.security.user.UserDetailServiceImpl;
 import com.generoso.microservices.core.property.JwtConfiguration;
-import com.generoso.microservices.core.repository.ApplicationUserRepository;
-
-import lombok.RequiredArgsConstructor;
+import com.generoso.microservices.security.config.SecurityTokenConfig;
+import com.generoso.microservices.security.token.converter.TokenConverter;
+import com.generoso.microservices.security.token.creator.TokenCreator;
 
 @EnableWebSecurity
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class SecurityCredentialsConfig extends WebSecurityConfigurerAdapter {
+public class SecurityCredentialsConfig extends SecurityTokenConfig {
 
-  private final ApplicationUserRepository applicationUserRepository;
-  private final JwtConfiguration jwtConfiguration;
+  private final UserDetailsService userDetailsService;
+  private final TokenCreator tokenCreator;
+  private final TokenConverter tokenConverter;
+
+  public SecurityCredentialsConfig(JwtConfiguration jwtConfiguration,
+      UserDetailsService userDetailsService,
+      TokenCreator tokenCreator, TokenConverter tokenConverter) {
+    super(jwtConfiguration);
+    this.userDetailsService = userDetailsService;
+    this.tokenCreator = tokenCreator;
+    this.tokenConverter = tokenConverter;
+  }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable()
-        .cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
-        .and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .exceptionHandling().authenticationEntryPoint((req, res, ex) ->
-            res.sendError(HttpServletResponse.SC_UNAUTHORIZED))
-        .and()
-        .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfiguration)).authorizeRequests()
-          .antMatchers(jwtConfiguration.getUrlLogin()).permitAll()
-          .antMatchers("/courses/admin/**").hasRole("ADMIN")
-          .anyRequest().authenticated();
+    http
+        .addFilter(
+            new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(),
+                jwtConfiguration, tokenCreator));
+    super.configure(http);
   }
 
   @Override
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(userDetailsServiceBean()).passwordEncoder(passwordEncoder());
-  }
-
-  @Override
-  @Bean
-  public UserDetailsService userDetailsServiceBean() throws Exception {
-    return new UserDetailServiceImpl(applicationUserRepository);
+    auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
   }
 
   @Bean
