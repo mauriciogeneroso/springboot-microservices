@@ -22,6 +22,7 @@
 
   <properties>
     <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
+    <nimbus-jose.version>7.0</nimbus-jose.version>
   </properties>
 
   <dependencies>
@@ -45,6 +46,12 @@
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
       <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>com.nimbusds</groupId>
+      <artifactId>nimbus-jose-jwt</artifactId>
+      <version>${nimbus-jose.version}</version>
     </dependency>
 
     <dependency>
