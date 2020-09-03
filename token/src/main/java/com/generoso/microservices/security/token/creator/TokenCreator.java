@@ -1,11 +1,12 @@
 package com.generoso.microservices.security.token.creator;
 
+import static java.util.stream.Collectors.toList;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,11 +33,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author Mauricio Generoso
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TokenCreator {
-
   private final JwtConfiguration jwtConfiguration;
 
   @SneakyThrows
@@ -44,15 +47,12 @@ public class TokenCreator {
     log.info("Starting to create the signed JWT");
 
     ApplicationUser applicationUser = (ApplicationUser) auth.getPrincipal();
-
     JWTClaimsSet jwtClaimSet = createJWTClaimSet(auth, applicationUser);
-
     KeyPair rsaKeys = generateKeyPair();
 
     log.info("Building JWK from the RSA Keys");
-
-    JWK jwk = new RSAKey.Builder((RSAPublicKey) rsaKeys.getPublic())
-        .keyID(UUID.randomUUID().toString()).build();
+    JWK jwk = new RSAKey.Builder(
+        (RSAPublicKey) rsaKeys.getPublic()).keyID(UUID.randomUUID().toString()).build();
 
     SignedJWT signedJWT = new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256)
         .jwk(jwk)
@@ -77,18 +77,18 @@ public class TokenCreator {
         .claim("authorities", auth.getAuthorities()
             .stream()
             .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toList()))
+            .collect(toList()))
         .claim("userId", applicationUser.getId())
         .issuer("http://academy.devdojo")
         .issueTime(new Date())
-        .expirationTime(new Date(System.currentTimeMillis() + (jwtConfiguration.getExpiration() * 1000)))
+        .expirationTime(new Date(System.currentTimeMillis() +
+            (jwtConfiguration.getExpiration() * 1000)))
         .build();
   }
 
   @SneakyThrows
   private KeyPair generateKeyPair() {
     log.info("Generating RSA 2048 bits Keys");
-
     KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
     generator.initialize(2048);
     return generator.genKeyPair();
@@ -98,10 +98,10 @@ public class TokenCreator {
   public String encryptToken(SignedJWT signedJWT) throws JOSEException {
     log.info("Starting the encryptToken method");
 
-    DirectEncrypter directEncrypter = new DirectEncrypter(jwtConfiguration.getPrivateKey().getBytes());
-
-    JWEObject jweObject =
-        new JWEObject(new JWEHeader.Builder(JWEAlgorithm.DIR, EncryptionMethod.A128CBC_HS256)
+    DirectEncrypter directEncrypter =
+        new DirectEncrypter(jwtConfiguration.getPrivateKey().getBytes());
+    JWEObject jweObject = new JWEObject(new JWEHeader.Builder(
+            JWEAlgorithm.DIR, EncryptionMethod.A128CBC_HS256)
         .contentType("JWT")
         .build(), new Payload(signedJWT));
 

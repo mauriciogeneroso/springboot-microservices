@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -25,6 +27,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplicationUser implements AbstractEntity {
 
   @Id
@@ -39,6 +42,7 @@ public class ApplicationUser implements AbstractEntity {
   @Column(nullable = false)
   private String password;
 
+  @Builder.Default
   @Column(nullable = false)
   private String role = "USER";
 

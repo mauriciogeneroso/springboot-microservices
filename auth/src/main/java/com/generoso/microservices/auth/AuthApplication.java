@@ -9,6 +9,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import com.generoso.microservices.core.property.JwtConfiguration;
 
+/**
+ * @author Mauricio Generoso
+ */
 @EnableEurekaClient
 @SpringBootApplication
 @EntityScan({"com.generoso.microservices.core.model"})

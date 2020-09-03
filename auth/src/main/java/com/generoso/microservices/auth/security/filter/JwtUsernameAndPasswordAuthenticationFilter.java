@@ -21,6 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author Mauricio Generoso
+ */
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class JwtUsernameAndPasswordAuthenticationFilter extends

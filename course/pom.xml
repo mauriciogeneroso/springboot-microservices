@@ -17,13 +17,21 @@
 
 	<properties>
 		<java.version>11</java.version>
+		<microservices-core.version>1.0-SNAPSHOT</microservices-core.version>
+		<microservices-token.version>1.0-SNAPSHOT</microservices-token.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.generoso.microservices</groupId>
 			<artifactId>core</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>${microservices-core.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.generoso.microservices</groupId>
+			<artifactId>token</artifactId>
+			<version>${microservices-token.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -12,12 +12,11 @@ import com.nimbusds.jwt.SignedJWT;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author Mauricio Generoso
+ */
 @Slf4j
 public class SecurityContextUtil {
-
-  private SecurityContextUtil() {
-
-  }
 
   public static void setSecurityContext(SignedJWT signedJWT) {
     try {
@@ -33,7 +32,9 @@ public class SecurityContextUtil {
           .username(username)
           .role(String.join(",", authorities))
           .build();
-      UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(applicationUser, null, createAuthorities(authorities));
+      UsernamePasswordAuthenticationToken auth =
+          new UsernamePasswordAuthenticationToken(
+              applicationUser, null, createAuthorities(authorities));
       auth.setDetails(signedJWT.serialize());
 
       SecurityContextHolder.getContext().setAuthentication(auth);

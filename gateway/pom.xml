@@ -17,12 +17,19 @@
 
 	<properties>
 		<java.version>11</java.version>
+		<microservices-token.version>1.0-SNAPSHOT</microservices-token.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.generoso.microservices</groupId>
+			<artifactId>token</artifactId>
+			<version>${microservices-token.version}</version>
 		</dependency>
 	</dependencies>
 

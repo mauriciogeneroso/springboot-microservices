@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author Mauricio Generoso
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -23,10 +26,12 @@ public class TokenConverter {
   @SneakyThrows
   public String decryptToken(String encryptedToken) {
     log.info("Decrypting token");
+
     JWEObject jweObject = JWEObject.parse(encryptedToken);
     DirectDecrypter directDecrypter =
         new DirectDecrypter(jwtConfiguration.getPrivateKey().getBytes());
     jweObject.decrypt(directDecrypter);
+
     log.info("Token decrypted, returning signed token . . . ");
     return jweObject.getPayload().toSignedJWT().serialize();
   }
@@ -43,6 +48,8 @@ public class TokenConverter {
 
     if (!signedJWT.verify(new RSASSAVerifier(publicKey)))
       throw new AccessDeniedException("Invalid token signature!");
+
     log.info("The token has a valid signature");
   }
+
 }

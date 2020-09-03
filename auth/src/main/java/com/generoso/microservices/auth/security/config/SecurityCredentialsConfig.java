@@ -1,18 +1,22 @@
 package com.generoso.microservices.auth.security.config;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.generoso.microservices.auth.security.filter.JwtUsernameAndPasswordAuthenticationFilter;
 import com.generoso.microservices.core.property.JwtConfiguration;
 import com.generoso.microservices.security.config.SecurityTokenConfig;
+import com.generoso.microservices.security.filter.JwtTokenAuthorizationFilter;
 import com.generoso.microservices.security.token.converter.TokenConverter;
 import com.generoso.microservices.security.token.creator.TokenCreator;
 
+/**
+ * @author Mauricio Generoso
+ */
 @EnableWebSecurity
 public class SecurityCredentialsConfig extends SecurityTokenConfig {
 
@@ -34,7 +38,9 @@ public class SecurityCredentialsConfig extends SecurityTokenConfig {
     http
         .addFilter(
             new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(),
-                jwtConfiguration, tokenCreator));
+                jwtConfiguration, tokenCreator))
+        .addFilterAfter(new JwtTokenAuthorizationFilter(jwtConfiguration, tokenConverter),
+            UsernamePasswordAuthenticationFilter.class);
     super.configure(http);
   }
 
